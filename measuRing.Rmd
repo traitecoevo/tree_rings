@@ -1,0 +1,101 @@
+
+
+
+https://www.youtube.com/watch?v=D-bd3CcNBA0
+https://www.sciencedirect.com/science/article/pii/S1125786515000247
+https://rstudio-pubs-static.s3.amazonaws.com/160964_2a564fa749db462ab02eb899909ec500.html
+
+
+```{r}
+#install.packages("measuRing")
+library(measuRing)
+```
+
+
+Example using supplied file
+
+
+```{r}
+image1 <- system.file("P105_a.tif", package = "measuRing")
+image1
+```
+
+All in one go
+```{r}
+detect1 <- ringDetect(image1)
+detect1$'ringWidths'
+
+```
+
+
+Step by step
+```{r}
+par(mfrow=c(2,1))
+gray <- imageTogray(image1)
+xrange <- range(0:ncol(gray)) + c(-1,1)
+yrange <- range(0:nrow(gray)) + c(-1,1)    
+plot(xrange,yrange,xlim=xrange,ylim=yrange,xlab='',
+      ylab='',type='n',asp=0)
+  rasterImage(gray,xrange[1],yrange[1],xrange[2],yrange[2])    
+
+smoothed <- graySmoothed(image1,ppi=1000)
+Smooth <- ts(smoothed)
+main. <- 'Smoothed gray'
+plot(Smooth,xlab = 'Column', main=main.,
+     ylab = 'Smoothed gray',col = 'gray')
+
+```
+
+Now try with our own image:
+
+```{r}
+
+image2 <- "images/DSC_1388-crop.tif"
+
+par(mfrow=c(3,1))
+
+gray <- imageTogray(image2)
+xrange <- range(0:ncol(gray)) + c(-1,1)
+yrange <- range(0:nrow(gray)) + c(-1,1)    
+plot(xrange,yrange,xlim=xrange,ylim=yrange,xlab='',
+     ylab='',type='n',asp=0)
+rasterImage(gray,xrange[1],yrange[1],xrange[2],yrange[2])    
+
+av_gray <- apply(gray, 2, mean)
+av_gray_mean_rolling_mean <- zoo::rollmean(av_gray,100, align = "center")
+plot(av_gray, type='l',asp=0, col='gray')
+lines(av_gray_mean_rolling_mean, col="red")
+
+# Showing that the automated detction in the package is not working so well
+smoothed <- graySmoothed(image2, rgb = c(0.3, 0.6, 0.1))
+plot( ts(smoothed),xlab = 'Column',col = 'gray')
+
+```
+
+
+
+
+
+
+
+
+---------------
+gray <- imageTogray(image2)
+xrange <- range(0:ncol(gray)) + c(-1,1)
+yrange <- range(0:nrow(gray)) + c(-1,1)    
+plot(xrange,yrange,xlim=xrange,ylim=yrange,xlab='',
+     ylab='',type='n',asp=0)
+rasterImage(gray,xrange[1],yrange[1],xrange[2],yrange[2])    
+
+
+gray2 <- imageTogray(image2, p.row = 0.1)
+xrange <- range(0:ncol(gray)) + c(-1,1)
+yrange <- range(0:nrow(gray)) + c(-1,1)    
+plot(xrange,yrange,xlim=xrange,ylim=yrange,xlab='',
+     ylab='',type='n',asp=0)
+rasterImage(gray,xrange[1],yrange[1],xrange[2],yrange[2])    
+
+image2 <- "~/Downloads/dan_tree/DSC_1388-crop_BW.tif"
+
+
+measuRing
